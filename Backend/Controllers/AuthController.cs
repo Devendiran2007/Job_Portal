@@ -20,9 +20,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("/register")]
-    public async IActionResult Register([FromBody] RegisterDto registerdto){
+    public  IActionResult Register([FromBody] RegisterDto registerdto){
 
-        var existingUser = await _context.Users.FirstOrDefault(u => u.Email == registerdto.Email);
+        var existingUser =  _context.Users.FirstOrDefault(u => u.Email == registerdto.Email);
 
         if(existingUser != null) {
             return BadRequest("The Email is Already Registred");
@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
         {
             FullName = registerdto.Name,
             Email = registerdto.Email,
-            PasswordHash = registerdto.Password,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerdto.Password),
             Role = registerdto.Role
         };
 
@@ -46,12 +46,12 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("/login")]
-    public async IActionResult Login([FromBody] LoginDto logindto) {
+    public  IActionResult Login([FromBody] LoginDto logindto) {
 
-        var user = await _context.Users.FirstOrDefault(u => u.Email == logindto.Email && u.PasswordHash == logindto.Password);
+        var user =  _context.Users.FirstOrDefault(u => u.Email == logindto.Email);
 
-        if(user == null) {
-            return BadRequest("The Email is not registred");
+        if(user == null || !BCrypt.Net.BCrypt.Verify(logindto.Password , user.PasswordHash)) {
+            return BadRequest("Invalid Email or Password");
         }
 
         return Ok(new {
