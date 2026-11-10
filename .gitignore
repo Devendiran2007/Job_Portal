@@ -1,0 +1,37 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Environment & Secrets
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.Example.json
+*.env
+*.env.*
+
+## Visual Studio & VS Code
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+## User-specific / publish files
+*.DotSettings.user
+*.publishsettings
+publish/
+
+## OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Frontend (if you add a frontend in the future)
+node_modules/
+dist/
+build/
+.next/
+npm-debug.log*

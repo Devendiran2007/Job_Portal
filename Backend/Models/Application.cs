@@ -1,5 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Job_Portal.Backend.Models;
 
@@ -19,7 +18,7 @@ public class Application {
     [ForeignKey(nameof(JobId))]
     public Job? Job {get; set;}
 
-    public string Status {get; set;} = string.Empty();
+    public string Status {get; set;} = string.Empty;
 
     public  string? CoverLetter {get; set;}
 

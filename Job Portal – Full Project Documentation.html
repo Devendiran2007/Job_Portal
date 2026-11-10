@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Job Portal – Full Project Documentation</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3450;
+    --accent: #6366f1;
+    --accent2: #22d3ee;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.7; }
+
+  /* Layout */
+  .shell { display: flex; min-height: 100vh; }
+  nav { width: 260px; min-width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  main { flex: 1; padding: 40px 48px; max-width: 900px; }
+
+  /* Nav */
+  .nav-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .nav-logo h1 { font-size: 15px; font-weight: 700; color: var(--accent); }
+  .nav-logo p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .nav-section { padding: 8px 20px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  nav a { display: block; padding: 6px 20px; font-size: 13px; color: var(--muted); text-decoration: none; border-left: 2px solid transparent; transition: all .15s; }
+  nav a:hover { color: var(--text); border-left-color: var(--accent); background: rgba(99,102,241,.06); }
+
+  /* Sections */
+  section { margin-bottom: 56px; }
+  h2 { font-size: 22px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 24px; }
+  h3 { font-size: 16px; font-weight: 600; color: var(--accent2); margin: 28px 0 12px; }
+  h4 { font-size: 14px; font-weight: 600; color: var(--yellow); margin: 20px 0 8px; }
+  p { color: var(--muted); margin-bottom: 12px; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge-get { background: rgba(34,211,238,.15); color: var(--accent2); }
+  .badge-post { background: rgba(34,197,94,.15); color: var(--green); }
+  .badge-put { background: rgba(245,158,11,.15); color: var(--yellow); }
+  .badge-delete { background: rgba(239,68,68,.15); color: var(--red); }
+  .badge-auth { background: rgba(99,102,241,.15); color: var(--accent); }
+  .badge-public { background: rgba(148,163,184,.1); color: var(--muted); }
+  .badge-recruiter { background: rgba(245,158,11,.12); color: var(--yellow); }
+  .badge-candidate { background: rgba(34,211,238,.12); color: var(--accent2); }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th { background: var(--surface2); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+  td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* Code */
+  code { font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 12px; background: var(--code-bg); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; color: #a5f3fc; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; overflow-x: auto; margin: 16px 0; }
+  pre code { background: none; border: none; padding: 0; color: #e2e8f0; font-size: 13px; line-height: 1.6; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+
+  /* Endpoint rows */
+  .endpoint { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .endpoint:last-child { border-bottom: none; }
+  .endpoint-left { min-width: 80px; }
+  .endpoint-path { font-family: monospace; font-size: 13px; color: var(--text); font-weight: 600; }
+  .endpoint-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .endpoint-roles { display: flex; gap: 6px; margin-top: 6px; }
+
+  /* Tech stack pills */
+  .tech-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+  .tech-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; }
+  .tech-pill span { color: var(--muted); font-size: 11px; display: block; }
+
+  /* Timeline */
+  .timeline { margin: 16px 0; }
+  .tl-item { display: flex; gap: 16px; margin-bottom: 20px; }
+  .tl-dot { width: 32px; height: 32px; min-width: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .tl-content { flex: 1; }
+  .tl-title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* Alert box */
+  .alert { border-radius: 8px; padding: 14px 18px; margin: 16px 0; border-left: 3px solid; font-size: 13px; }
+  .alert-info { background: rgba(99,102,241,.08); border-color: var(--accent); color: #c7d2fe; }
+  .alert-warn { background: rgba(245,158,11,.08); border-color: var(--yellow); color: #fde68a; }
+  .alert-green { background: rgba(34,197,94,.08); border-color: var(--green); color: #bbf7d0; }
+
+  /* Progress */
+  .day-block { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 10px 0; }
+  .day-label { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+  .day-tasks { font-size: 13px; color: var(--muted); }
+  .day-tasks li { margin: 3px 0 3px 16px; }
+
+  /* Schema field */
+  .field-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(46,52,80,.5); font-size: 13px; }
+  .field-name { font-family: monospace; color: #a5f3fc; min-width: 160px; }
+  .field-type { color: var(--yellow); min-width: 100px; }
+  .field-note { color: var(--muted); }
+
+  @media (max-width: 768px) {
+    nav { display: none; }
+    main { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR NAV -->
+<nav>
+  <div class="nav-logo">
+    <h1>Job Portal Docs</h1>
+    <p>React + ASP.NET Core + Azure</p>
+  </div>
+  <div class="nav-section">Overview</div>
+  <a href="#overview">Project Summary</a>
+  <a href="#tech">Tech Stack</a>
+  <a href="#roles">User Roles</a>
+  <div class="nav-section">Database</div>
+  <a href="#entities">Entities & Models</a>
+  <a href="#schema">DB Schema</a>
+  <a href="#relationships">Relationships</a>
+  <div class="nav-section">Backend</div>
+  <a href="#structure">Project Structure</a>
+  <a href="#auth-endpoints">Auth Endpoints</a>
+  <a href="#job-endpoints">Job Endpoints</a>
+  <a href="#application-endpoints">Application Endpoints</a>
+  <a href="#profile-endpoints">Profile Endpoints</a>
+  <div class="nav-section">Frontend</div>
+  <a href="#pages">Pages & Routes</a>
+  <a href="#components">Components</a>
+  <a href="#state">State & API</a>
+  <div class="nav-section">Plan</div>
+  <a href="#dayplan">20-Day Plan</a>
+  <a href="#deploy">Deployment</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2>📋 Project Summary</h2>
+  <p>A full-stack Job Portal where <strong>Recruiters</strong> post jobs and <strong>Candidates</strong> apply for them. Built with ASP.NET Core Web API backend, React + Tailwind frontend, SQL Server database via Entity Framework Core, JWT authentication, and deployed on Microsoft Azure.</p>
+  <div class="alert alert-green">
+    <strong>Resume Line:</strong> "Built a full-stack Job Portal with role-based JWT authentication, REST API backend in ASP.NET Core, React frontend, deployed on Azure App Service and Azure Static Web Apps."
+  </div>
+
+  <h3>What This Project Demonstrates</h3>
+  <table>
+    <tr><th>Skill</th><th>Where It Shows</th></tr>
+    <tr><td>REST API Design</td><td>All backend endpoints with proper HTTP methods</td></tr>
+    <tr><td>JWT Authentication</td><td>Login, token generation, protected routes</td></tr>
+    <tr><td>Role-Based Access</td><td>Recruiter vs Candidate permissions</td></tr>
+    <tr><td>Entity Framework Core</td><td>All database operations via ORM</td></tr>
+    <tr><td>Repository Pattern</td><td>Separation of data access from controllers</td></tr>
+    <tr><td>React Fundamentals</td><td>useState, useEffect, Axios, React Router</td></tr>
+    <tr><td>Cloud Deployment</td><td>Azure App Service + Azure Static Web Apps</td></tr>
+    <tr><td>Clean Architecture</td><td>Proper folder structure separating concerns</td></tr>
+  </table>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <h2>🛠 Tech Stack</h2>
+  <h3>Backend</h3>
+  <div class="tech-grid">
+    <div class="tech-pill">ASP.NET Core 8 Web API <span>Backend Framework</span></div>
+    <div class="tech-pill">C# <span>Language</span></div>
+    <div class="tech-pill">Entity Framework Core <span>ORM / Database</span></div>
+    <div class="tech-pill">SQL Server <span>Database</span></div>
+    <div class="tech-pill">JWT Bearer Tokens <span>Authentication</span></div>
+    <div class="tech-pill">BCrypt.Net <span>Password Hashing</span></div>
+  </div>
+  <h3>Frontend</h3>
+  <div class="tech-grid">
+    <div class="tech-pill">React 18 <span>UI Framework</span></div>
+    <div class="tech-pill">React Router v6 <span>Navigation</span></div>
+    <div class="tech-pill">Tailwind CSS <span>Styling</span></div>
+    <div class="tech-pill">Axios <span>HTTP Client</span></div>
+    <div class="tech-pill">Context API <span>Auth State</span></div>
+  </div>
+  <h3>DevOps & Deployment</h3>
+  <div class="tech-grid">
+    <div class="tech-pill">GitHub <span>Source Control</span></div>
+    <div class="tech-pill">Azure App Service <span>Backend Hosting</span></div>
+    <div class="tech-pill">Azure Static Web Apps <span>Frontend Hosting</span></div>
+    <div class="tech-pill">Azure SQL <span>Cloud Database</span></div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section id="roles">
+  <h2>👤 User Roles</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-title">🏢 Recruiter</div>
+      <ul style="font-size:13px;color:var(--muted);padding-left:16px;">
+        <li>Register as Recruiter</li>
+        <li>Post, Edit, Delete jobs</li>
+        <li>View all applicants for a job</li>
+        <li>Accept or Reject applications</li>
+        <li>View their own posted jobs</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">🎓 Candidate</div>
+      <ul style="font-size:13px;color:var(--muted);padding-left:16px;">
+        <li>Register as Candidate</li>
+        <li>Browse all open jobs</li>
+        <li>Apply for any job (once)</li>
+        <li>View their own applications</li>
+        <li>See application status updates</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ENTITIES -->
+<section id="entities">
+  <h2>🗂 Entities & Models</h2>
+  <div class="alert alert-info">These are your C# model classes in the <code>Domain/Entities</code> folder. EF Core reads these to generate database tables.</div>
+
+  <h3>User</h3>
+  <div class="field-row"><span class="field-name">Id</span><span class="field-type">int</span><span class="field-note">Primary Key, auto-increment</span></div>
+  <div class="field-row"><span class="field-name">FullName</span><span class="field-type">string</span><span class="field-note">Required, max 100 chars</span></div>
+  <div class="field-row"><span class="field-name">Email</span><span class="field-type">string</span><span class="field-note">Required, unique, used for login</span></div>
+  <div class="field-row"><span class="field-name">PasswordHash</span><span class="field-type">string</span><span class="field-note">BCrypt hashed — never store plain text</span></div>
+  <div class="field-row"><span class="field-name">Role</span><span class="field-type">string</span><span class="field-note">"Recruiter" or "Candidate"</span></div>
+  <div class="field-row"><span class="field-name">CreatedAt</span><span class="field-type">DateTime</span><span class="field-note">Auto set on creation</span></div>
+
+  <h3>Job</h3>
+  <div class="field-row"><span class="field-name">Id</span><span class="field-type">int</span><span class="field-note">Primary Key</span></div>
+  <div class="field-row"><span class="field-name">Title</span><span class="field-type">string</span><span class="field-note">Required, e.g. "Backend Developer"</span></div>
+  <div class="field-row"><span class="field-name">Description</span><span class="field-type">string</span><span class="field-note">Full job description text</span></div>
+  <div class="field-row"><span class="field-name">Location</span><span class="field-type">string</span><span class="field-note">City or "Remote"</span></div>
+  <div class="field-row"><span class="field-name">Salary</span><span class="field-type">string</span><span class="field-note">e.g. "8-12 LPA"</span></div>
+  <div class="field-row"><span class="field-name">JobType</span><span class="field-type">string</span><span class="field-note">"Full-Time", "Part-Time", "Internship"</span></div>
+  <div class="field-row"><span class="field-name">IsActive</span><span class="field-type">bool</span><span class="field-note">True = open, False = closed</span></div>
+  <div class="field-row"><span class="field-name">RecruiterId</span><span class="field-type">int (FK)</span><span class="field-note">Foreign Key → User.Id</span></div>
+  <div class="field-row"><span class="field-name">CreatedAt</span><span class="field-type">DateTime</span><span class="field-note">Auto set</span></div>
+
+  <h3>Application</h3>
+  <div class="field-row"><span class="field-name">Id</span><span class="field-type">int</span><span class="field-note">Primary Key</span></div>
+  <div class="field-row"><span class="field-name">CandidateId</span><span class="field-type">int (FK)</span><span class="field-note">Foreign Key → User.Id</span></div>
+  <div class="field-row"><span class="field-name">JobId</span><span class="field-type">int (FK)</span><span class="field-note">Foreign Key → Job.Id</span></div>
+  <div class="field-row"><span class="field-name">Status</span><span class="field-type">string</span><span class="field-note">"Pending", "Accepted", "Rejected"</span></div>
+  <div class="field-row"><span class="field-name">CoverLetter</span><span class="field-type">string?</span><span class="field-note">Optional text from candidate</span></div>
+  <div class="field-row"><span class="field-name">AppliedAt</span><span class="field-type">DateTime</span><span class="field-note">Auto set</span></div>
+</section>
+
+<!-- SCHEMA -->
+<section id="schema">
+  <h2>🗄 Database Schema (SQL)</h2>
+  <pre><code>-- Users Table
+CREATE TABLE Users (
+    Id          INT IDENTITY PRIMARY KEY,
+    FullName    NVARCHAR(100) NOT NULL,
+    Email       NVARCHAR(255) NOT NULL UNIQUE,
+    PasswordHash NVARCHAR(500) NOT NULL,
+    Role        NVARCHAR(20)  NOT NULL,  -- 'Recruiter' or 'Candidate'
+    CreatedAt   DATETIME2 DEFAULT GETDATE()
+);
+
+-- Jobs Table
+CREATE TABLE Jobs (
+    Id          INT IDENTITY PRIMARY KEY,
+    Title       NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(MAX) NOT NULL,
+    Location    NVARCHAR(100),
+    Salary      NVARCHAR(50),
+    JobType     NVARCHAR(50),            -- 'Full-Time','Internship' etc
+    IsActive    BIT DEFAULT 1,
+    RecruiterId INT NOT NULL REFERENCES Users(Id) ON DELETE CASCADE,
+    CreatedAt   DATETIME2 DEFAULT GETDATE()
+);
+
+-- Applications Table
+CREATE TABLE Applications (
+    Id          INT IDENTITY PRIMARY KEY,
+    CandidateId INT NOT NULL REFERENCES Users(Id),
+    JobId       INT NOT NULL REFERENCES Jobs(Id) ON DELETE CASCADE,
+    Status      NVARCHAR(20) DEFAULT 'Pending',
+    CoverLetter NVARCHAR(MAX),
+    AppliedAt   DATETIME2 DEFAULT GETDATE(),
+    UNIQUE(CandidateId, JobId)           -- one application per job
+);</code></pre>
+</section>
+
+<!-- RELATIONSHIPS -->
+<section id="relationships">
+  <h2>🔗 Relationships</h2>
+  <table>
+    <tr><th>From</th><th>To</th><th>Type</th><th>Rule</th></tr>
+    <tr><td>User (Recruiter)</td><td>Job</td><td>One-to-Many</td><td>One recruiter → many jobs</td></tr>
+    <tr><td>User (Candidate)</td><td>Application</td><td>One-to-Many</td><td>One candidate → many applications</td></tr>
+    <tr><td>Job</td><td>Application</td><td>One-to-Many</td><td>One job → many applications</td></tr>
+    <tr><td>Candidate + Job</td><td>Application</td><td>Many-to-Many (via Application)</td><td>Unique constraint — apply once only</td></tr>
+  </table>
+</section>
+
+<!-- PROJECT STRUCTURE -->
+<section id="structure">
+  <h2>📁 Backend Project Structure</h2>
+  <pre><code>JobPortal.API/
+├── Controllers/
+│   ├── AuthController.cs
+│   ├── JobsController.cs
+│   └── ApplicationsController.cs
+│
+├── Domain/
+│   └── Entities/
+│       ├── User.cs
+│       ├── Job.cs
+│       └── Application.cs
+│
+├── DTOs/                          ← Request/Response objects
+│   ├── Auth/
+│   │   ├── RegisterDto.cs
+│   │   └── LoginDto.cs
+│   ├── Jobs/
+│   │   ├── CreateJobDto.cs
+│   │   └── JobResponseDto.cs
+│   └── Applications/
+│       ├── ApplyJobDto.cs
+│       └── ApplicationResponseDto.cs
+│
+├── Repositories/                  ← Data access layer
+│   ├── Interfaces/
+│   │   ├── IUserRepository.cs
+│   │   ├── IJobRepository.cs
+│   │   └── IApplicationRepository.cs
+│   └── Implementations/
+│       ├── UserRepository.cs
+│       ├── JobRepository.cs
+│       └── ApplicationRepository.cs
+│
+├── Services/                      ← Business logic
+│   ├── AuthService.cs
+│   ├── JobService.cs
+│   └── ApplicationService.cs
+│
+├── Data/
+│   └── AppDbContext.cs            ← EF Core DbContext
+│
+└── Program.cs                     ← App config, DI, middleware</code></pre>
+</section>
+
+<!-- AUTH ENDPOINTS -->
+<section id="auth-endpoints">
+  <h2>🔐 Auth Endpoints</h2>
+  <p>Base URL: <code>/api/auth</code></p>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-post">POST</span></div>
+    <div>
+      <div class="endpoint-path">/api/auth/register</div>
+      <div class="endpoint-desc">Register a new user (Candidate or Recruiter)</div>
+      <div class="endpoint-roles"><span class="badge badge-public">Public</span></div>
+    </div>
+  </div>
+
+  <h4>Request Body</h4>
+  <pre><code>{
+  "fullName": "Deven Dirankar",
+  "email": "deven@example.com",
+  "password": "SecurePass123!",
+  "role": "Candidate"              // "Candidate" or "Recruiter"
+}</code></pre>
+  <h4>Response (200 OK)</h4>
+  <pre><code>{
+  "message": "Registration successful",
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "role": "Candidate",
+  "fullName": "Deven Dirankar"
+}</code></pre>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-post">POST</span></div>
+    <div>
+      <div class="endpoint-path">/api/auth/login</div>
+      <div class="endpoint-desc">Login and receive JWT token</div>
+      <div class="endpoint-roles"><span class="badge badge-public">Public</span></div>
+    </div>
+  </div>
+
+  <h4>Request Body</h4>
+  <pre><code>{
+  "email": "deven@example.com",
+  "password": "SecurePass123!"
+}</code></pre>
+  <h4>Response (200 OK)</h4>
+  <pre><code>{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "role": "Candidate",
+  "fullName": "Deven Dirankar",
+  "userId": 1
+}</code></pre>
+
+  <div class="alert alert-warn">
+    <strong>Interview Point:</strong> The JWT token contains userId and role in its claims. Every protected endpoint reads these claims — no extra DB call needed to know who is logged in.
+  </div>
+</section>
+
+<!-- JOB ENDPOINTS -->
+<section id="job-endpoints">
+  <h2>💼 Job Endpoints</h2>
+  <p>Base URL: <code>/api/jobs</code></p>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-get">GET</span></div>
+    <div>
+      <div class="endpoint-path">/api/jobs</div>
+      <div class="endpoint-desc">Get all active jobs (with optional search/filter)</div>
+      <div class="endpoint-roles"><span class="badge badge-public">Public</span></div>
+    </div>
+  </div>
+  <h4>Query Params (optional)</h4>
+  <pre><code>?search=developer&location=Pune&jobType=Full-Time</code></pre>
+  <h4>Response</h4>
+  <pre><code>[
+  {
+    "id": 1,
+    "title": "Backend Developer",
+    "location": "Pune",
+    "salary": "8-12 LPA",
+    "jobType": "Full-Time",
+    "recruiterName": "TechCorp",
+    "createdAt": "2026-11-01T00:00:00"
+  }
+]</code></pre>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-get">GET</span></div>
+    <div>
+      <div class="endpoint-path">/api/jobs/{id}</div>
+      <div class="endpoint-desc">Get single job details</div>
+      <div class="endpoint-roles"><span class="badge badge-public">Public</span></div>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-post">POST</span></div>
+    <div>
+      <div class="endpoint-path">/api/jobs</div>
+      <div class="endpoint-desc">Create a new job posting</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-recruiter">Recruiter Only</span></div>
+    </div>
+  </div>
+  <h4>Request Body</h4>
+  <pre><code>{
+  "title": "React Developer",
+  "description": "We need a skilled React developer...",
+  "location": "Bangalore",
+  "salary": "10-15 LPA",
+  "jobType": "Full-Time"
+}</code></pre>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-put">PUT</span></div>
+    <div>
+      <div class="endpoint-path">/api/jobs/{id}</div>
+      <div class="endpoint-desc">Edit a job (only the recruiter who posted it)</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-recruiter">Recruiter Only</span></div>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-delete">DELETE</span></div>
+    <div>
+      <div class="endpoint-path">/api/jobs/{id}</div>
+      <div class="endpoint-desc">Delete a job posting</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-recruiter">Recruiter Only</span></div>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-get">GET</span></div>
+    <div>
+      <div class="endpoint-path">/api/jobs/my</div>
+      <div class="endpoint-desc">Get all jobs posted by the logged-in recruiter</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-recruiter">Recruiter Only</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- APPLICATION ENDPOINTS -->
+<section id="application-endpoints">
+  <h2>📨 Application Endpoints</h2>
+  <p>Base URL: <code>/api/applications</code></p>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-post">POST</span></div>
+    <div>
+      <div class="endpoint-path">/api/applications</div>
+      <div class="endpoint-desc">Apply for a job</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-candidate">Candidate Only</span></div>
+    </div>
+  </div>
+  <h4>Request Body</h4>
+  <pre><code>{
+  "jobId": 3,
+  "coverLetter": "I am excited to apply for..."  // optional
+}</code></pre>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-get">GET</span></div>
+    <div>
+      <div class="endpoint-path">/api/applications/my</div>
+      <div class="endpoint-desc">Get all applications submitted by logged-in candidate</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-candidate">Candidate Only</span></div>
+    </div>
+  </div>
+  <h4>Response</h4>
+  <pre><code>[
+  {
+    "id": 1,
+    "jobTitle": "React Developer",
+    "company": "TechCorp",
+    "status": "Pending",
+    "appliedAt": "2026-11-05T00:00:00"
+  }
+]</code></pre>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-get">GET</span></div>
+    <div>
+      <div class="endpoint-path">/api/applications/job/{jobId}</div>
+      <div class="endpoint-desc">Get all applicants for a specific job</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-recruiter">Recruiter Only</span></div>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-put">PUT</span></div>
+    <div>
+      <div class="endpoint-path">/api/applications/{id}/status</div>
+      <div class="endpoint-desc">Update application status (Accept or Reject)</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span> <span class="badge badge-recruiter">Recruiter Only</span></div>
+    </div>
+  </div>
+  <h4>Request Body</h4>
+  <pre><code>{
+  "status": "Accepted"   // "Accepted" or "Rejected"
+}</code></pre>
+</section>
+
+<!-- PROFILE ENDPOINTS -->
+<section id="profile-endpoints">
+  <h2>👤 Profile Endpoints</h2>
+  <p>Base URL: <code>/api/users</code></p>
+  <div class="endpoint">
+    <div class="endpoint-left"><span class="badge badge-get">GET</span></div>
+    <div>
+      <div class="endpoint-path">/api/users/me</div>
+      <div class="endpoint-desc">Get current logged-in user's profile</div>
+      <div class="endpoint-roles"><span class="badge badge-auth">JWT Required</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FRONTEND PAGES -->
+<section id="pages">
+  <h2>⚛️ Frontend Pages & Routes</h2>
+  <table>
+    <tr><th>Route</th><th>Page</th><th>Access</th></tr>
+    <tr><td><code>/</code></td><td>Home / Job Listings</td><td>Public</td></tr>
+    <tr><td><code>/login</code></td><td>Login Page</td><td>Public</td></tr>
+    <tr><td><code>/register</code></td><td>Register Page</td><td>Public</td></tr>
+    <tr><td><code>/jobs/:id</code></td><td>Job Detail Page</td><td>Public</td></tr>
+    <tr><td><code>/candidate/dashboard</code></td><td>My Applications</td><td>Candidate only</td></tr>
+    <tr><td><code>/recruiter/dashboard</code></td><td>My Posted Jobs</td><td>Recruiter only</td></tr>
+    <tr><td><code>/recruiter/post-job</code></td><td>Post New Job Form</td><td>Recruiter only</td></tr>
+    <tr><td><code>/recruiter/jobs/:id/applicants</code></td><td>Applicants List</td><td>Recruiter only</td></tr>
+  </table>
+</section>
+
+<!-- COMPONENTS -->
+<section id="components">
+  <h2>🧩 React Components</h2>
+  <pre><code>src/
+├── pages/
+│   ├── Home.jsx                 ← Job listings with search
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   ├── JobDetail.jsx
+│   ├── candidate/
+│   │   └── Dashboard.jsx        ← My applications
+│   └── recruiter/
+│       ├── Dashboard.jsx        ← My jobs
+│       ├── PostJob.jsx
+│       └── Applicants.jsx
+│
+├── components/
+│   ├── Navbar.jsx               ← Links change based on role
+│   ├── JobCard.jsx              ← Reusable job listing card
+│   ├── ProtectedRoute.jsx       ← Redirect if not logged in
+│   └── RoleRoute.jsx            ← Redirect if wrong role
+│
+├── context/
+│   └── AuthContext.jsx          ← Global auth state (token, role, user)
+│
+├── services/
+│   └── api.js                   ← All Axios API calls in one file
+│
+└── App.jsx                      ← Route definitions</code></pre>
+</section>
+
+<!-- STATE -->
+<section id="state">
+  <h2>🔄 State & API Setup</h2>
+  <h3>AuthContext (Global State)</h3>
+  <pre><code>// What AuthContext stores:
+{
+  user: { id, fullName, role },
+  token: "eyJ...",
+  login: (token, user) => {},    // saves to localStorage + state
+  logout: () => {}               // clears everything
+}</code></pre>
+
+  <h3>Axios API Service (api.js)</h3>
+  <pre><code>import axios from 'axios';
+
+const API = axios.create({
+  baseURL: 'https://your-api.azurewebsites.net/api'
+});
+
+// Auto-attach JWT token to every request
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// Auth
+export const register = (data) => API.post('/auth/register', data);
+export const login    = (data) => API.post('/auth/login', data);
+
+// Jobs
+export const getAllJobs   = (params) => API.get('/jobs', { params });
+export const getJobById   = (id)     => API.get(`/jobs/${id}`);
+export const createJob    = (data)   => API.post('/jobs', data);
+export const updateJob    = (id, d)  => API.put(`/jobs/${id}`, d);
+export const deleteJob    = (id)     => API.delete(`/jobs/${id}`);
+export const getMyJobs    = ()       => API.get('/jobs/my');
+
+// Applications
+export const applyJob        = (data)   => API.post('/applications', data);
+export const getMyApps       = ()       => API.get('/applications/my');
+export const getJobApplicants = (jobId) => API.get(`/applications/job/${jobId}`);
+export const updateAppStatus  = (id, s) => API.put(`/applications/${id}/status`, { status: s });</code></pre>
+</section>
+
+<!-- 20 DAY PLAN -->
+<section id="dayplan">
+  <h2>📅 20-Day Build Plan</h2>
+
+  <h3>Week 1 — Backend (Days 1–7)</h3>
+  <div class="day-block"><div class="day-label">Day 1 — Project Setup</div><div class="day-tasks"><ul><li>Create ASP.NET Core Web API project</li><li>Install packages: EF Core, SQL Server, JWT, BCrypt</li><li>Setup folder structure (see above)</li><li>Configure connection string in appsettings.json</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 2 — Database</div><div class="day-tasks"><ul><li>Create User, Job, Application entity classes</li><li>Setup AppDbContext with DbSets</li><li>Run EF Core migration: add-migration Init</li><li>Run update-database — tables created</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 3 — Auth</div><div class="day-tasks"><ul><li>Create RegisterDto, LoginDto</li><li>Build AuthService with BCrypt hashing + JWT generation</li><li>Build AuthController with /register and /login</li><li>Test in Postman — get a token back</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 4 — Job APIs</div><div class="day-tasks"><ul><li>Create IJobRepository and JobRepository</li><li>Register in DI (Program.cs)</li><li>Build JobsController: GET all, GET by id, POST, PUT, DELETE</li><li>Add [Authorize(Roles = "Recruiter")] on POST, PUT, DELETE</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 5 — Application APIs</div><div class="day-tasks"><ul><li>Create IApplicationRepository and ApplicationRepository</li><li>Build ApplicationsController: apply, getMyApps, getJobApplicants, updateStatus</li><li>Enforce candidate/recruiter role checks</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 6 — Repository Pattern Cleanup</div><div class="day-tasks"><ul><li>Ensure NO direct DbContext calls in controllers</li><li>All DB calls go through repository interfaces</li><li>Add proper HTTP responses (200, 400, 401, 404)</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 7 — Full API Test</div><div class="day-tasks"><ul><li>Test every endpoint in Postman</li><li>Test auth: wrong password, missing token, wrong role</li><li>Fix all bugs found</li></ul></div></div>
+
+  <h3>Week 2 — Frontend (Days 8–14)</h3>
+  <div class="day-block"><div class="day-label">Day 8 — React Setup</div><div class="day-tasks"><ul><li>Create React app, install Tailwind + Axios + React Router</li><li>Setup folder structure</li><li>Create AuthContext and api.js</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 9 — Auth Pages</div><div class="day-tasks"><ul><li>Build Login.jsx and Register.jsx with Tailwind forms</li><li>Connect to API, store token in localStorage + context</li><li>Setup ProtectedRoute and RoleRoute components</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 10 — Job Listings</div><div class="day-tasks"><ul><li>Build Home.jsx — fetch and display all jobs as cards</li><li>Add search bar (filter by title)</li><li>Build JobDetail.jsx — full job info + Apply button</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 11 — Candidate Dashboard</div><div class="day-tasks"><ul><li>Build candidate/Dashboard.jsx</li><li>Show all applied jobs with status badge (Pending/Accepted/Rejected)</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 12 — Recruiter Dashboard</div><div class="day-tasks"><ul><li>Build recruiter/Dashboard.jsx — list posted jobs</li><li>Build PostJob.jsx — form to create job</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 13 — Recruiter Actions</div><div class="day-tasks"><ul><li>Build Applicants.jsx — list candidates who applied</li><li>Add Accept/Reject buttons that call PUT status endpoint</li><li>Add Edit/Delete on job cards</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 14 — Integration + Bug Fix</div><div class="day-tasks"><ul><li>Full flow test: Register → Login → Post Job → Apply → Accept</li><li>Fix broken API calls, loading states, error messages</li></ul></div></div>
+
+  <h3>Week 3 — Polish & Deploy (Days 15–20)</h3>
+  <div class="day-block"><div class="day-label">Day 15 — Error Handling</div><div class="day-tasks"><ul><li>Add loading spinners on buttons</li><li>Show error messages from API in UI</li><li>Handle expired JWT (auto logout)</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 16 — Azure Setup</div><div class="day-tasks"><ul><li>Sign up at azure.microsoft.com/students (free, college email)</li><li>Create Azure App Service (free tier) for backend</li><li>Create Azure SQL database</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 17 — Deploy Backend</div><div class="day-tasks"><ul><li>Update connection string to Azure SQL</li><li>Publish ASP.NET Core API to Azure App Service</li><li>Test all endpoints on live URL</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 18 — Deploy Frontend</div><div class="day-tasks"><ul><li>Update API base URL in api.js to Azure URL</li><li>Create Azure Static Web App</li><li>Connect to GitHub repo — auto deploys on push</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 19 — GitHub Cleanup</div><div class="day-tasks"><ul><li>Write README.md (project name, tech stack, features, screenshots, setup steps)</li><li>Add .gitignore — no appsettings secrets committed</li><li>Use environment variables for connection strings</li></ul></div></div>
+  <div class="day-block"><div class="day-label">Day 20 — Interview Practice</div><div class="day-tasks"><ul><li>Record yourself explaining the project out loud (2 minutes)</li><li>Practice these questions until instant answers</li></ul></div></div>
+</section>
+
+<!-- DEPLOY -->
+<section id="deploy">
+  <h2>☁️ Deployment Checklist</h2>
+  <table>
+    <tr><th>What</th><th>Where on Azure</th><th>Free?</th></tr>
+    <tr><td>ASP.NET Core API</td><td>Azure App Service (F1 free tier)</td><td>✅ Yes</td></tr>
+    <tr><td>SQL Server Database</td><td>Azure SQL (free tier 32GB)</td><td>✅ Yes</td></tr>
+    <tr><td>React Frontend</td><td>Azure Static Web Apps</td><td>✅ Always Free</td></tr>
+    <tr><td>CI/CD Pipeline</td><td>GitHub Actions (auto-setup by Azure)</td><td>✅ Yes</td></tr>
+  </table>
+  <div class="alert alert-green">Sign up at <strong>azure.microsoft.com/free/students</strong> with your college email — instant $100 credits, no credit card needed.</div>
+</section>
+
+<!-- INTERVIEW PREP -->
+<section id="interview">
+  <h2>🎯 Interview Questions to Prepare</h2>
+  <div class="alert alert-warn">Know the answer to every one of these without hesitation. Interviewers will go 3-4 questions deep into your project.</div>
+
+  <h3>Must-Know Questions</h3>
+  <table>
+    <tr><th>Question</th><th>What They're Testing</th></tr>
+    <tr><td>How does JWT work in your project?</td><td>Authentication understanding</td></tr>
+    <tr><td>What is Dependency Injection and where did you use it?</td><td>ASP.NET Core core concept</td></tr>
+    <tr><td>Why Repository Pattern? Why not query DbContext directly?</td><td>Design pattern knowledge</td></tr>
+    <tr><td>How do you prevent one candidate from applying twice?</td><td>DB constraint knowledge</td></tr>
+    <tr><td>How is role-based authorization implemented?</td><td>Security implementation</td></tr>
+    <tr><td>What is Entity Framework Core? What is a migration?</td><td>ORM understanding</td></tr>
+    <tr><td>How does React Context work in your project?</td><td>Frontend state management</td></tr>
+    <tr><td>How did you deploy on Azure?</td><td>Cloud knowledge</td></tr>
+    <tr><td>What would you improve if you had more time?</td><td>Self-awareness and depth</td></tr>
+  </table>
+</section>
+
+</main>
+</div>
+</body>
+</html>
